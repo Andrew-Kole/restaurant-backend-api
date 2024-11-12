@@ -2,55 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../common/mongo-schemas/user/user.schema';
 import { Model } from 'mongoose';
-import { CreateUserDto } from './dto/user.create.dto';
-import { UserUpdateDto } from './dto/user.update.dto';
+import { LoginDto } from '../auth/dto/login.dto';
+import { MongooseService } from '../common/global-services/mongoose.service';
+import { MongoErrorHandler } from '../common/decorators/error-handlers/mongo.error.handler.decorator';
 
 @Injectable()
-export class UserRepository {
+export class UserRepository extends MongooseService<UserDocument>{
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>
-    ) {}
-
-    async create(user: CreateUserDto) {
-        const newUser = new this.userModel(user);
-        await newUser.save();
-        return newUser;
+    ) {
+        super(userModel);
     }
 
-    async update(userId: string, user: UserUpdateDto) {
-        return this.userModel.findOneAndUpdate({
-            _id: userId,
-            deleted: false,
-        },{
-            $set: user,
-        }, {
-            new: true,
-        }).exec();
-    }
-
-    async getById(userId: string) {
-        console.log(userId)
-        return this.userModel.findOne({
-            _id: userId,
+    @MongoErrorHandler()
+    async findByEmail(loginDto: LoginDto) {
+        return await this.userModel.findOne({
+            email: loginDto.email,
+            password: loginDto.password,
             deleted: false,
         }).exec();
-    }
-
-    async getAll() {
-        return this.userModel.find({
-            deleted: false,
-        }).exec();
-    }
-
-    async delete(userId: string) {
-        return this.userModel.findOneAndUpdate({
-            _id: userId,
-        }, {
-            $set: {
-                deleted: true,
-            }
-        }, {
-            new: true,
-        });
     }
 }

@@ -1,21 +1,21 @@
-import { IsEmail, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserPayloadFieldsDescription } from '../../common/swagger/user/user.payload.fields.description.enum';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-export class UserUpdateDto {
-
+export class RegisterDto {
     @ApiProperty({description: UserPayloadFieldsDescription.USER_NAME})
-    @IsOptional()
-    @IsEmail()
-    email: string;
+    @IsNotEmpty()
+    @IsString()
+    readonly name: string;
 
     @ApiProperty({description: UserPayloadFieldsDescription.USER_EMAIL})
-    @IsOptional()
-    @IsString()
-    password: string;
+    @IsNotEmpty()
+    @IsEmail()
+    readonly email: string;
 
     @ApiProperty({description: UserPayloadFieldsDescription.USER_PASSWORD})
-    @IsOptional()
+    @IsNotEmpty()
     @IsString()
-    name: string;
+    readonly password: string;
 }
+
