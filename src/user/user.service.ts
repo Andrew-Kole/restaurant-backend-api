@@ -17,7 +17,8 @@ export class UserService {
     }
 
     async getById(userId: string) {
-        return await this.userRepository.getById(userId);
+        // return await this.userRepository.getById(userId)
+        return await this.userRepository.findByEmail({email: 'fdjvfdjk', password: 'vfdjkvfdj'})
     }
 
     async getAll() {

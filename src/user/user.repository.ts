@@ -7,6 +7,7 @@ import { MongooseService } from '../common/global-services/mongoose.service';
 import { MongoErrorHandler } from '../common/decorators/error-handlers/mongo.error.handler.decorator';
 
 @Injectable()
+@MongoErrorHandler()
 export class UserRepository extends MongooseService<UserDocument>{
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>
@@ -14,12 +15,13 @@ export class UserRepository extends MongooseService<UserDocument>{
         super(userModel);
     }
 
-    @MongoErrorHandler()
     async findByEmail(loginDto: LoginDto) {
-        return await this.userModel.findOne({
+       const user = await this.userModel.findOne({
             email: loginDto.email,
             password: loginDto.password,
             deleted: false,
         }).exec();
+       console.log(user);
+       return user;
     }
 }
