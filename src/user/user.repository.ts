@@ -16,12 +16,10 @@ export class UserRepository extends MongooseService<UserDocument>{
     }
 
     async findByEmail(loginDto: LoginDto) {
-       const user = await this.userModel.findOne({
+       return await this.userModel.findOne({
             email: loginDto.email,
             password: loginDto.password,
             deleted: false,
         }).exec();
-       console.log(user);
-       return user;
     }
 }

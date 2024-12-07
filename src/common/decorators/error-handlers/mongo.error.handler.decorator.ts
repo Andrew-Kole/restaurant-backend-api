@@ -1,18 +1,8 @@
 import { convertMongoException } from '../../libs/mongo.exceptions.converter';
+import { NotFoundException } from '@nestjs/common';
+import { ErrorMessage } from '../../error-messages/error.message.enum';
 
 export function MongoErrorHandler() {
-    // return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    //     const originalMethod = descriptor.value;
-    //     descriptor.value = async function (...args: any[]) {
-    //         try {
-    //             await originalMethod.apply(this, args);
-    //         }
-    //         catch (error) {
-    //             convertMongoException(error);
-    //         }
-    //     };
-    //     return descriptor;
-    // };
     return function (constructor: Function) {
         const originalMethods = Object.getOwnPropertyNames(constructor.prototype);
         for (const methodName of originalMethods) {
@@ -24,7 +14,11 @@ export function MongoErrorHandler() {
             if (typeof originalMethod === 'function') {
                 constructor.prototype[methodName] = async function (...args: any[]) {
                     try {
-                        return await originalMethod.apply(this, args);
+                        const result = await originalMethod.apply(this, args);
+                        if (!result) {
+                            throw new NotFoundException(ErrorMessage.NOT_FOUND);
+                        }
+                        return result;
                     }
                     catch (error) {
                         convertMongoException(error);

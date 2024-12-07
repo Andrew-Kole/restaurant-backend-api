@@ -13,6 +13,6 @@ export function convertMongoException(error: Error) {
         }
     }
     else {
-        throw new InternalServerErrorException('error.message');
+        throw error;
     }
 }
