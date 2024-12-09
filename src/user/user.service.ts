@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { UserUpdateDto } from './dto/user.update.dto';
-import { LoginDto } from '../auth/dto/login.dto';
 import { RegisterDto } from '../auth/dto/register.dto';
 
 @Injectable()
@@ -17,7 +16,7 @@ export class UserService {
     }
 
     async getById(userId: string) {
-        return await this.userRepository.getById(userId);
+        return await this.userRepository.getById(userId)
     }
 
     async getAll() {
@@ -28,7 +27,7 @@ export class UserService {
         return await this.userRepository.delete(userId);
     }
 
-    async findByEmail(loginDto: LoginDto) {
-        return await this.userRepository.findByEmail(loginDto);
+    async findByEmail(email: string) {
+        return await this.userRepository.findByEmail(email);
     }
 }

@@ -3,35 +3,36 @@ import { Document, Model } from 'mongoose';
 import { MongoErrorHandler } from '../decorators/error-handlers/mongo.error.handler.decorator';
 
 @Injectable()
+@MongoErrorHandler()
 export abstract class MongooseService<T extends Document> {
     protected constructor (
         protected readonly model: Model<T>,
     ) {}
 
-    @MongoErrorHandler()
+
     async create(data: any) {
         const createdEntity = new this.model(data);
-        return await createdEntity.save();
+        const savedEntity = await createdEntity.save();
+        return savedEntity.toObject();
     }
 
-    @MongoErrorHandler()
     async getById(id: string) {
-        return await this.model.findOne({
+        const document = await this.model.findOne({
             _id: id,
             deleted: false,
         }).exec();
+        return document ? document.toObject() : null;
     }
 
-    @MongoErrorHandler()
     async getAll() {
-        return await this.model.find({
+        const documents = await this.model.find({
             deleted: false,
         }).exec();
+        return documents.map(document => document.toObject());
     }
 
-    @MongoErrorHandler()
     async update(id: string, data: any) {
-        return await this.model.findOneAndUpdate({
+        const document = await this.model.findOneAndUpdate({
             _id: id,
             deleted: false,
         }, {
@@ -39,11 +40,11 @@ export abstract class MongooseService<T extends Document> {
         }, {
             new: true,
         }).exec();
+        return document ? document.toObject() : null;
     }
 
-    @MongoErrorHandler()
     async delete(id: string) {
-        return await this.model.findOneAndUpdate({
+        const document = await this.model.findOneAndUpdate({
             _id: id,
         }, {
             $set: {
@@ -52,5 +53,6 @@ export abstract class MongooseService<T extends Document> {
         }, {
             new: true,
         }).exec();
+        return document ? document.toObject() : null;
     }
 }

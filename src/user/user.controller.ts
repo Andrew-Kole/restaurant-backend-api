@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpStatus, Patch, Query, Res } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserUpdateDto } from './dto/user.update.dto';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserEndpointDescription } from '../common/swagger/user/user.endpoints.description.enum';
 import { UserEndpointsResponseDescription } from '../common/swagger/user/user.endpoints.response.description.enum';
 import { UserQueryDescription } from '../common/swagger/user/user.query.description.enum';
@@ -16,6 +16,7 @@ export class UserController {
     ) {}
 
     @Patch('update')
+    @ApiBearerAuth()
     @ApiOperation({summary: UserEndpointDescription.UPDATE})
     @ApiQuery({name: 'userId', required: true, description: UserQueryDescription.USER_ID})
     @ApiResponse({status: HttpStatus.OK, description: UserEndpointsResponseDescription.UPDATE})
@@ -31,6 +32,7 @@ export class UserController {
     }
 
     @Get()
+    @ApiBearerAuth()
     @ApiOperation({summary: UserEndpointDescription.GET_USER})
     @ApiQuery({name: 'userId', required: true, description: UserQueryDescription.USER_ID})
     @ApiResponse({status: HttpStatus.OK, description: UserEndpointsResponseDescription.GET_USER})
@@ -46,6 +48,7 @@ export class UserController {
     }
 
     @Get('list')
+    @ApiBearerAuth()
     @ApiOperation({summary: UserEndpointDescription.GET_USER_LIST})
     @ApiResponse({status: HttpStatus.OK, description: UserEndpointsResponseDescription.GET_USER_LIST})
     async getAll(@Res() res: Response) {
@@ -64,6 +67,7 @@ export class UserController {
     }
 
     @Delete('delete/:userId')
+    @ApiBearerAuth()
     @ApiOperation({summary: UserEndpointDescription.DELETE})
     @ApiQuery({name: 'userId', required: true, description: UserQueryDescription.USER_ID})
     @ApiResponse({status: HttpStatus.NO_CONTENT, description: UserEndpointsResponseDescription.DELETE})
