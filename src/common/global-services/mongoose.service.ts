@@ -12,24 +12,27 @@ export abstract class MongooseService<T extends Document> {
 
     async create(data: any) {
         const createdEntity = new this.model(data);
-        return await createdEntity.save();
+        const savedEntity = await createdEntity.save();
+        return savedEntity.toObject();
     }
 
     async getById(id: string) {
-        return await this.model.findOne({
+        const document = await this.model.findOne({
             _id: id,
             deleted: false,
         }).exec();
+        return document ? document.toObject() : null;
     }
 
     async getAll() {
-        return await this.model.find({
+        const documents = await this.model.find({
             deleted: false,
         }).exec();
+        return documents.map(document => document.toObject());
     }
 
     async update(id: string, data: any) {
-        return await this.model.findOneAndUpdate({
+        const document = await this.model.findOneAndUpdate({
             _id: id,
             deleted: false,
         }, {
@@ -37,10 +40,11 @@ export abstract class MongooseService<T extends Document> {
         }, {
             new: true,
         }).exec();
+        return document ? document.toObject() : null;
     }
 
     async delete(id: string) {
-        return await this.model.findOneAndUpdate({
+        const document = await this.model.findOneAndUpdate({
             _id: id,
         }, {
             $set: {
@@ -49,5 +53,6 @@ export abstract class MongooseService<T extends Document> {
         }, {
             new: true,
         }).exec();
+        return document ? document.toObject() : null;
     }
 }

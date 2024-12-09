@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../common/mongo-schemas/user/user.schema';
 import { Model } from 'mongoose';
-import { LoginDto } from '../auth/dto/login.dto';
 import { MongooseService } from '../common/global-services/mongoose.service';
 import { MongoErrorHandler } from '../common/decorators/error-handlers/mongo.error.handler.decorator';
 
@@ -15,11 +14,11 @@ export class UserRepository extends MongooseService<UserDocument>{
         super(userModel);
     }
 
-    async findByEmail(loginDto: LoginDto) {
-       return await this.userModel.findOne({
-            email: loginDto.email,
-            password: loginDto.password,
+    async findByEmail(email: string) {
+       const user = await this.userModel.findOne({
+            email: email,
             deleted: false,
         }).exec();
+       return user ? user.toObject() : null;
     }
 }
